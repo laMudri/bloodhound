@@ -1287,6 +1287,14 @@ input[type="radio"]:not(:checked) + label span {
  font-family: monospace;
 }
 
+.old-value {
+ background: #FCE9E9;
+}
+
+.new-value {
+ background: #E7FDE7;
+}
+
 #help.pull-right {
  text-align: right;
 }

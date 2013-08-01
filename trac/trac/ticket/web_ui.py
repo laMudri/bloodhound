@@ -1743,9 +1743,9 @@ class TicketModule(Component):
                     'EMAIL_VIEW' in req.perm(resource_new or ticket.resource)):
                 render_elt = obfuscate_email_address
         if (old_list, new_list) != (None, None):
-            added = [tag.em(render_elt(x)) for x in new_list
+            added = [tag.em(render_elt(x), class_="new-value") for x in new_list
                      if x not in old_list]
-            remvd = [tag.em(render_elt(x)) for x in old_list
+            remvd = [tag.em(render_elt(x), class_="old-value") for x in old_list
                      if x not in new_list]
             added = added and tagn_("%(items)s added", "%(items)s added",
                                     len(added), items=separated(added, sep))
@@ -1759,12 +1759,15 @@ class TicketModule(Component):
                 old = obfuscate_email_address(old)
                 new = obfuscate_email_address(new)
             if old and not new:
-                rendered = tag_("%(value)s deleted", value=tag.em(old))
+                rendered = tag_("%(value)s deleted",
+                                value=tag.em(old, class_="old-value"))
             elif new and not old:
-                rendered = tag_("set to %(value)s", value=tag.em(new))
+                rendered = tag_("set to %(value)s",
+                                value=tag.em(new, class_="new-value"))
             elif old and new:
                 rendered = tag_("changed from %(old)s to %(new)s",
-                                old=tag.em(old), new=tag.em(new))
+                                old=tag.em(old, class_="old-value"),
+                                new=tag.em(new, class_="new-value"))
         return rendered
 
     def grouped_changelog_entries(self, ticket, db=None, when=None):

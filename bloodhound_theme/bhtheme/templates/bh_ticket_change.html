@@ -147,20 +147,20 @@ Arguments:
           <py:when test="field_name == 'reported'">
           </py:when>
           <py:when test="field_name == 'attachment'"><i18n:msg params="name">
-            <a href="${href.attachment('ticket', ticket.id, field.new)}"><em>${field.new
+            <a href="${href.attachment('ticket', ticket.id, field.new)}"><em class="new-value">${field.new
               }</em></a><a href="${href('raw-attachment', 'ticket', ticket.id, field.new)}"
                            title="Download" class="trac-rawlink">&#8203;</a>
             added
           </i18n:msg></py:when>
           <py:when test="'rendered' in field">${field.rendered}</py:when>
           <py:when test="field.old and field.new"><i18n:msg params="old, new">
-            changed from <em>${field.old}</em> to <em>${field.new}</em>
+            changed from <em class="old-value">${field.old}</em> to <em class="new-value">${field.new}</em>
           </i18n:msg></py:when>
           <py:when test="not field.old and field.new"><i18n:msg params="value">
-            set to <em>${field.new}</em>
+            set to <em class="new-value">${field.new}</em>
           </i18n:msg></py:when>
           <py:otherwise><i18n:msg params="value">
-            <em>${field.old}</em> deleted
+            <em class="old-value">${field.old}</em> deleted
           </i18n:msg></py:otherwise>
         </py:choose>
         <span class="${'hidden-desktop' if change.cnum else ''}">
