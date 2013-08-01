@@ -46,6 +46,7 @@ from bhdashboard.web_ui import DashboardModule
 from bhdashboard import wiki
 
 from multiproduct.env import ProductEnvironment
+from multiproduct.ticket.model import BHComponent
 from multiproduct.web_ui import PRODUCT_RE, ProductModule
 
 try:
@@ -392,9 +393,14 @@ class BloodhoundTheme(ThemeBase):
             # add milestone list + current milestone to the breadcrumb
             data['milestone_list'] = [m.name
                                       for m in Milestone.select(self.env)]
+            data['component_list'] = [c.name
+                                      for c in BHComponent.select(self.env)]
             mname = data['ticket']['milestone']
             if mname:
                 data['milestone'] = Milestone(self.env, mname)
+            cname = data['ticket']['component']
+            if cname:
+                data['component'] = BHComponent(self.env, cname)
 
     def _modify_admin_breadcrumb(self, req, template, data, content_type, is_active):
         # override 'normal' product list with the admin one

@@ -122,6 +122,7 @@ ENTRY_POINTS = r"""
                bhdashboard.widgets.ticket = bhdashboard.widgets.ticket
                bhdashboard.widgets.timeline = bhdashboard.widgets.timeline
                bhdashboard.wiki = bhdashboard.wiki
+               bhdashboard.component = bhdashboard.component
                """
 
 setup(

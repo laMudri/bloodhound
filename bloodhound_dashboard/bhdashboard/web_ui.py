@@ -416,3 +416,92 @@ def parse_args_tag(stream):
                 args[argnm] = argvalue
                 inside = False
     return args
+    
+def get_ticket_stats(provider, tickets):
+    return provider.get_ticket_group_stats([t['id'] for t in tickets])
+
+def get_tickets_for_component(env, db=None, component=None, field='component'):
+    """Retrieve all tickets associated with the given `component`.
+
+    .. versionchanged :: 1.0
+       the `db` parameter is no longer needed and will be removed in
+       version 1.1.1
+    """
+    with env.db_query as db:
+        fields = TicketSystem(env).get_ticket_fields()
+        if field in [f['name'] for f in fields if not f.get('custom')]:
+            sql = """SELECT id, status, %s FROM ticket WHERE component=%%s
+                     ORDER BY %s""" % (field, field)
+            args = (component,)
+        else:
+            sql = """SELECT id, status, value FROM ticket
+                       LEFT OUTER JOIN ticket_custom ON (id=ticket AND name=%s)
+                      WHERE component=%s ORDER BY value"""
+            args = (field, component)
+        return [{'id': tkt_id, 'status': status, field: fieldval}
+                for tkt_id, status, fieldval in env.db_query(sql, args)]
+
+def apply_ticket_permissions(env, req, tickets):
+    """Apply permissions to a set of component tickets as returned by
+    `get_tickets_for_component()`."""
+    return [t for t in tickets
+            if 'TICKET_VIEW' in req.perm('ticket', t['id'])]
+
+def component_stats_data(env, req, stat, name, grouped_by='component',
+                         group=None):
+    from trac.ticket.query import QueryModule
+    has_query = env[QueryModule] is not None
+    def query_href(extra_args):
+        if not has_query:
+            return None
+        args = {'component': name, grouped_by: group, 'group': 'status'}
+        args.update(extra_args)
+        return req.href.query(args)
+    return {'stats': stat,
+            'stats_href': query_href(stat.qry_args),
+            'interval_hrefs': [query_href(interval['qry_args'])
+                               for interval in stat.intervals]}
+
+def grouped_stats_data(env, stats_provider, tickets, by, per_group_stats_data):
+    """Get the `tickets` stats data grouped by ticket field `by`.
+
+    `per_group_stats_data(gstat, group_name)` should return a data dict to
+    include for the group with field value `group_name`.
+    """
+    group_names = []
+    for field in TicketSystem(env).get_ticket_fields():
+        if field['name'] == by:
+            if 'options' in field:
+                group_names = field['options']
+                if field.get('optional'):
+                    group_names.insert(0, '')
+            else:
+                group_names = [name for name, in env.db_query("""
+                    SELECT DISTINCT COALESCE(%s, '') FROM ticket
+                    ORDER BY COALESCE(%s, '')
+                    """ % (by, by))]
+    max_count = 0
+    data = []
+
+    for name in group_names:
+        values = (name,) if name else (None, name)
+        group_tickets = [t for t in tickets if t[by] in values]
+        if not group_tickets:
+            continue
+
+        gstat = get_ticket_stats(stats_provider, group_tickets)
+        if gstat.count > max_count:
+            max_count = gstat.count
+
+        gs_dict = {'name': name}
+        gs_dict.update(per_group_stats_data(gstat, name))
+        data.append(gs_dict)
+
+    for gs_dict in data:
+        percent = 1.0
+        if max_count:
+            gstat = gs_dict['stats']
+            percent = float(gstat.count) / float(max_count) * 100
+        gs_dict['percent_of_max_total'] = percent
+    return data
+    

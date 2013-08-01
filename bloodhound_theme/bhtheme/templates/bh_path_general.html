@@ -90,6 +90,27 @@
           </py:if>
         </div>
       </py:if>
+      <py:if test="component"
+       py:with="single_component = not component_list or len(component_list) &lt; 2">
+        <li><span class="divider">/</span></li>
+        <div class="btn-group" py:strip="single_component">
+          <button class="btn btn-mini" py:strip="single_component">
+            <a title="Current component" href="${href.component(component.name)}">${component.name}</a>
+          </button>
+          <py:if test="not single_component">
+            <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li py:for="name in component_list">
+                <a title="Component $name" href="${href.component(name)}">$name</a>
+              </li>
+              <li class="divider"></li>
+              <li><a title="Back to roadmap" href="${href.roadmap()}">Roadmap</a></li>
+            </ul>
+          </py:if>
+        </div>
+      </py:if>
     </py:otherwise>
   </py:choose>
 </div>

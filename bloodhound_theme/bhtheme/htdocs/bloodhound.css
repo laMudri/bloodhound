@@ -1281,3 +1281,12 @@ input[type="radio"]:checked + label span {
 input[type="radio"]:not(:checked) + label span {
  text-decoration:underline;
 }
+
+#content textarea,
+.popover-content textarea {
+ font-family: monospace;
+}
+
+#help.pull-right {
+ text-align: right;
+}
