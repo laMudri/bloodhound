@@ -1,0 +1,132 @@
+<!--!
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:i18n="http://genshi.edgewall.org/i18n"
+      xmlns:bh="http://issues.apache.org/bloodhound/wiki/Ui/Dashboard"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xi:include href="layout.html" />
+  <xi:include href="widget_macros.html" />
+
+  <py:def function="version_date">
+    <py:choose test="">
+      <py:when test="version.time">
+        <i18n:msg params="duration, date">
+          Due in ${dateinfo(version.time)}
+        </i18n:msg>
+      </py:when>
+      <py:otherwise>
+        <span class="label">Unscheduled</span>
+      </py:otherwise>
+    </py:choose>
+  </py:def>
+
+  <py:def function="version_owner()">
+    <py:choose>
+      <py:when test="version.owner">
+        Assigned to
+        <a href="${href.query(owner=version.owner, status='!closed',
+            version=version.name, order='priority')}">${version.owner}</a>
+      </py:when>
+      <py:otherwise>&nbsp;</py:otherwise>
+    </py:choose>
+  </py:def>
+
+  <py:def function="version_heading()">
+    <h1>Version ${version.name}</h1>
+    <h6>${version_date()} &nbsp;&nbsp;&nbsp; ${version_owner()}</h6>
+  </py:def>
+
+  <py:def function="version_buttons()">
+    <div py:if="'MILESTONE_MODIFY' in perm(version.resource) or
+                'MILESTONE_DELETE' in perm(version.resource) or
+                attachments.can_create">
+      <form py:if="'MILESTONE_MODIFY' in perm(version.resource)"
+          method="get" action="" id="editversion"
+          style="display: inline-block">
+        <input type="hidden" name="action" value="edit" />
+        <div class="btn-group">
+          <button class="btn" name="editversionbutton" type="submit">
+            <i class="icon-edit"></i>
+            ${_('Edit')}
+          </button>
+        </div>
+      </form>
+      <form py:if="'MILESTONE_DELETE' in perm(version.resource)"
+          method="get" action="" id="deleteversion"
+          style="display: inline-block">
+        <input type="hidden" name="action" value="delete" />
+        <div class="btn-group">
+          <button class="btn" name="deleteversionbutton" type="submit">
+            <i class="icon-trash"></i>
+            ${_('Delete')}
+          </button>
+        </div>
+      </form>
+      <xi:include href="bh_attach_file_form.html" py:with="alist = attachments" />
+    </div>
+  </py:def>
+
+  <py:def function="version_widgets()">
+    <bh:widget urn="TicketQuery">
+      <bh:args>
+        <bh:arg name="max">10</bh:arg>
+        <bh:arg name="query">version=${version.name}&amp;status=!closed&amp;group=time&amp;col=id&amp;col=summary&amp;col=owner&amp;col=status&amp;col=priority&amp;order=priority&amp;groupdesc=1&amp;desc=1</bh:arg>
+        <bh:arg name="title">Active tickets in version</bh:arg>
+      </bh:args>
+    </bh:widget>
+    <bh:widget urn="TicketFieldValues">
+      <bh:args>
+        <bh:arg name="field">component</bh:arg>
+        <bh:arg name="verbose">true</bh:arg>
+        <bh:arg name="query">version=${version.name}&amp;group=component</bh:arg>
+      </bh:args>
+    </bh:widget>
+  </py:def>
+
+  <head>
+    <title>Version ${version.name}</title>
+    <link py:if="'MILESTONE_MODIFY' in perm(version.resource)" rel="alternate" type="application/x-wiki"
+          title="Edit this version" href="${href.version(version.name, action='edit')}" />
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $("#content").find("h1,h2,h3,h4,h5,h6").addAnchor("Link to this section");
+        $(".foldable").enableFolding(true, true);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="content" class="row version">
+      <xi:include href="bh_model_view.html"
+          py:with="heading = version_heading(); buttons = version_buttons();
+              progress_data = {'stats' : stats, 'interval_hrefs' : interval_hrefs};
+              description = wiki_to_html(context, version.description);
+              widgets = version_widgets();" />
+      <div class="span12">
+        <xi:include href="bh_list_of_attachments.html"
+                    py:with="alist = attachments; compact = True; foldable = True"/>
+      </div>
+    </div>
+  </body>
+
+</html>
