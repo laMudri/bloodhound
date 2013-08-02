@@ -69,48 +69,71 @@
           </ul>
         </py:if>
       </div>
-      <py:if test="milestone"
-       py:with="single_milestone = not milestone_list or len(milestone_list) &lt; 2">
-        <li><span class="divider">/</span></li>
-        <div class="btn-group" py:strip="single_milestone">
-          <button class="btn btn-mini" py:strip="single_milestone">
-            <a title="Current milestone" href="${href.milestone(milestone.name)}">${milestone.name}</a>
-          </button>
-          <py:if test="not single_milestone">
-            <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
-              <span class="caret"></span>
+      <py:choose test="">
+        <py:when test="milestone"
+         py:with="single_milestone = not milestone_list or len(milestone_list) &lt; 2">
+          <li><span class="divider">/</span></li>
+          <div class="btn-group" py:strip="single_milestone">
+            <button class="btn btn-mini" py:strip="single_milestone">
+              <a title="Current milestone" href="${href.milestone(milestone.name)}">${milestone.name}</a>
             </button>
-            <ul class="dropdown-menu">
-              <li py:for="name in milestone_list">
-                <a title="Milestone $name" href="${href.milestone(name)}">$name</a>
-              </li>
-              <li class="divider"></li>
-              <li><a title="Back to roadmap" href="${href.roadmap()}">Roadmap</a></li>
-            </ul>
-          </py:if>
-        </div>
-      </py:if>
-      <py:if test="component"
-       py:with="single_component = not component_list or len(component_list) &lt; 2">
-        <li><span class="divider">/</span></li>
-        <div class="btn-group" py:strip="single_component">
-          <button class="btn btn-mini" py:strip="single_component">
-            <a title="Current component" href="${href.component(component.name)}">${component.name}</a>
-          </button>
-          <py:if test="not single_component">
-            <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
-              <span class="caret"></span>
+            <py:if test="not single_milestone">
+              <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li py:for="name in milestone_list">
+                  <a title="Milestone $name" href="${href.milestone(name)}">$name</a>
+                </li>
+                <li class="divider"></li>
+                <li><a title="Back to roadmap" href="${href.roadmap()}">Roadmap</a></li>
+              </ul>
+            </py:if>
+          </div>
+        </py:when>
+        <py:when test="component"
+         py:with="single_component = not component_list or len(component_list) &lt; 2">
+          <li><span class="divider">/</span></li>
+          <div class="btn-group" py:strip="single_component">
+            <button class="btn btn-mini" py:strip="single_component">
+              <a title="Current component" href="${href.component(component.name)}">${component.name}</a>
             </button>
-            <ul class="dropdown-menu">
-              <li py:for="name in component_list">
-                <a title="Component $name" href="${href.component(name)}">$name</a>
-              </li>
-              <li class="divider"></li>
-              <li><a title="Back to roadmap" href="${href.roadmap()}">Roadmap</a></li>
-            </ul>
-          </py:if>
-        </div>
-      </py:if>
+            <py:if test="not single_component">
+              <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li py:for="name in component_list">
+                  <a title="Component $name" href="${href.component(name)}">$name</a>
+                </li>
+                <li class="divider"></li>
+                <li><a title="Back to roadmap" href="${href.roadmap()}">Roadmap</a></li>
+              </ul>
+            </py:if>
+          </div>
+        </py:when>
+        <py:when test="version"
+         py:with="single_version = not version_list or len(version_list) &lt; 2">
+          <li><span class="divider">/</span></li>
+          <div class="btn-group" py:strip="single_version">
+            <button class="btn btn-mini" py:strip="single_version">
+              <a title="Current version" href="${href.version(version.name)}">${version.name}</a>
+            </button>
+            <py:if test="not single_version">
+              <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li py:for="name in version_list">
+                  <a title="Version $name" href="${href.version(name)}">$name</a>
+                </li>
+                <li class="divider"></li>
+                <li><a title="Back to roadmap" href="${href.roadmap()}">Roadmap</a></li>
+              </ul>
+            </py:if>
+          </div>
+        </py:when>
+      </py:choose>
     </py:otherwise>
   </py:choose>
 </div>

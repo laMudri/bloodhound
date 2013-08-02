@@ -30,10 +30,10 @@ from trac.resource import (ResourceNotFound, Resource, ResourceSystem,
                            get_resource_url)
 from trac.search import ISearchSource, search_to_regexps, shorten_result
 from trac.ticket.api import TicketSystem
-from trac.ticket.roadmap import ITicketGroupStatsProvider, TicketGroupStats, \
-                                DefaultTicketGroupStatsProvider, \
-                                get_ticket_stats, grouped_stats_data, \
-                                RoadmapModule
+from trac.ticket.roadmap import (ITicketGroupStatsProvider, TicketGroupStats,
+                                 DefaultTicketGroupStatsProvider,
+                                 get_ticket_stats, grouped_stats_data,
+                                 RoadmapModule)
 from trac.timeline.api import ITimelineEventProvider
 #from trac.util.datefmt import parse_date, utc, to_utimestamp, to_datetime, \
 #                              get_datetime_format_hint, format_date, \
@@ -491,4 +491,3 @@ def component_stats_data(env, req, stat, name, grouped_by='component',
             'stats_href': query_href(stat.qry_args),
             'interval_hrefs': [query_href(interval['qry_args'])
                                for interval in stat.intervals]}
-

@@ -1,4 +1,3 @@
-
 #  Licensed to the Apache Software Foundation (ASF) under one
 #  or more contributor license agreements.  See the NOTICE file
 #  distributed with this work for additional information
@@ -146,4 +145,3 @@ class ProductSetting(ModelBase):
         return [row[0] for row in env.db_query("""SELECT DISTINCT section 
                 FROM bloodhound_productconfig WHERE product = %s""", 
                 (product,)) ]
-
